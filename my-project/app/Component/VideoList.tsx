@@ -70,6 +70,9 @@ export const VideoList = ({ setActiveData }: IVideoList) => {
         setActiveData && setActiveData(videoData[0])
     }, [])
 
+
+
+    
     const handleItemClick = ({item}: IItem) => {
         console.log("handleItemClick", item);
         setActiveData && setActiveData(item)
