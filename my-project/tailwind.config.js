@@ -11,7 +11,8 @@ module.exports = {
   theme: {
     extend: {},
     colors:{
-      extBlue:'#0F172A'
+      extBlue:'#0F172A',
+     textGray: "#A1A1AA"
     }
   },
   plugins: [],
