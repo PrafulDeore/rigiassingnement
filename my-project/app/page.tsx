@@ -15,9 +15,6 @@ export default function Home() {
   const [activeVideo, setActiveData] = useState({ sources: [] })
   console.log("activeVideo", activeVideo);
 
-
-
-
   useEffect(() => {
     setIsClient(true);
   }, []);
