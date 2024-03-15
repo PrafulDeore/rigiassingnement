@@ -1,41 +1,37 @@
-import React, { useEffect, useState } from 'react'
-import { SortEndHandler, SortableContainer, SortableElement, SortableHandle, arrayMove } from 'react-sortable-hoc'
-import { videoData } from '../videoData'
+import React, { useEffect, useState } from 'react';
+import { SortableContainer, SortableElement, SortableHandle, arrayMove } from 'react-sortable-hoc';
+import { videoData } from '../videoData';
 import Image from 'next/image';
 
 interface IVideoData {
     description: string;
     sources: string[];
     subtitle: string;
-    thumb: string | any; // Adjust the type of thumb to accept either string or StaticImageData
+    thumb: string | any;
     title: string;
-
 }
+
 interface IItem {
-    item: IVideoData
-
-
+    item: IVideoData;
+    index: number;
 }
 
-interface ISortableElemtType {
-    value: IVideoData
-
+interface ISortableElementType {
+    value: IVideoData;
+    isActive: boolean;
+    onclick: () => void
 }
+
 interface IVideoList {
-    setActiveData?: (_e: any) => void
+    setActiveData?: (_e: IVideoData | any) => void;
 }
 
-interface ISortableContainerType {
-    children: JSX.Element[];
-}
-const HandleDrag = SortableHandle(({ link }: any) => (
-    <span className=' p-[20px] text-[20px]'>::</span>
+const HandleDrag = SortableHandle(() => (
+    <span className='p-[20px] text-[20px]'>::</span>
 ));
 
-
-
-const SortableItem = SortableElement<ISortableElemtType>(({ value }: ISortableElemtType) => (
-    <li className='border flex justify-start items-center gap-x-[15px] cursor-pointer '>
+const SortableItem = SortableElement<ISortableElementType>(({ value, isActive, onclick }: ISortableElementType) => (
+    <li className={`border border-darkBlue flex justify-start items-center gap-x-[15px] cursor-pointer ${isActive ? 'bg-darkBlue' : ''}`} onClick={() => onclick()}>
         <HandleDrag />
         <Image
             src={value?.thumb}
@@ -43,52 +39,46 @@ const SortableItem = SortableElement<ISortableElemtType>(({ value }: ISortableEl
             className="my-[20px] rounded-[5px] h-14 w-14"
         />
         <div className='flex flex-col'>
-
             <span className='font-semibold text-[22px]'>{value?.title}</span>
-
             <span className='font-semibold text-[18px] text-textGray'>{value?.subtitle}</span>
         </div>
     </li>
 ));
 
-const SortableDiv = SortableContainer<ISortableContainerType>(({ children }: ISortableContainerType) => {
-    return <ul>{children}
-    </ul>
-})
+const SortableList :any  = SortableContainer(({ children }: { children: JSX.Element[] }) => (
+    <ul>{children}</ul>
+));
 
 export const VideoList = ({ setActiveData }: IVideoList) => {
+    const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const [sortedData, setSortedData] = useState<IVideoData[]>(videoData);
 
-
-    const onSortEnd: SortEndHandler = ({ oldIndex, newIndex }) => {
-        const titles = videoData.map(item => item.title)
-        const movedTitles = arrayMove(titles, oldIndex, newIndex)
-        const updatedVideoData = movedTitles.map(title => videoData.find(item => item.title === title))
-        console.log(updatedVideoData)
-    }
+    const onSortEnd = ({ oldIndex, newIndex }: { oldIndex: number, newIndex: number }) => {
+        const updatedData = arrayMove(sortedData, oldIndex, newIndex);
+        setSortedData(updatedData);
+    };
 
     useEffect(() => {
-        setActiveData && setActiveData(videoData[0])
-    }, [])
+        setActiveData && setActiveData(sortedData[0]);
+        setActiveIndex(0);
+    }, [sortedData]);
 
+    const handleItemClick = ({ item, index }: IItem) => {
+        setActiveData && setActiveData(item);
+        setActiveIndex(index);
+    };
 
-
-    
-    const handleItemClick = ({item}: IItem) => {
-        console.log("handleItemClick", item);
-        setActiveData && setActiveData(item)
-
-    }
     return (
-        <SortableDiv onSortEnd={onSortEnd} useDragHandle >
-            {videoData?.map((item, index) => {
-                return (
-                    <div key={`item-${item?.title}`} onClick={() => handleItemClick({item})}>
-                        <SortableItem index={index} value={item} />
-                    </div>
-                )
-            }
-            )}
-        </SortableDiv>
-    )
-}
+        <div className='h-[700px] overflow-scroll'>
+            <SortableList onSortEnd={onSortEnd} useDragHandle>
+                {sortedData.map((item, index) =>
+                (
+                    // <div key={`item-${item?.title}` } onClick={() => handleItemClick({ item, index })} >
 
+                    <SortableItem key={`item-${item?.title}`} index={index} value={item} isActive={index === activeIndex} onclick={() => handleItemClick({ item, index })} />
+                    // </div>
+                ))}
+            </SortableList>
+        </div>
+    );
+};

@@ -12,8 +12,8 @@ const DynamicReactPlayer = dynamic(() => import("react-player"), {
 
 export default function Home() {
   const [isClient, setIsClient] = useState(false);
-  const [activeVideo, setActiveData] = useState({ sources: [] })
-  console.log("activeVideo", activeVideo);
+  const [activeVideo, setActiveData] = useState({ sources: [], thumb: { src: '' } })
+  console.log("activeVideoactiveVideo", activeVideo?.thumb);
 
   useEffect(() => {
     setIsClient(true);
@@ -32,24 +32,29 @@ export default function Home() {
         />
       </div>
 
+      <div className="flex border">
 
-      {/* // * ReactPlayer */}
-      <div className="border w-full flex justify-center items-center">
+        {/* // * ReactPlayer */}
+        <div className="  px-[100px] max-w-[2000px] w-full">
 
-        {isClient &&
-          <DynamicReactPlayer
-            //  url='http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4'
-            url={activeVideo?.sources[0]}
-            controls={true}
-            playing={true}
+          {isClient &&
+            <DynamicReactPlayer
+              url={activeVideo?.sources[0]}
+              controls={true}
+              playing={true}
+              width="100%"
+              height="800px"
+              previewTabIndex={0}
+              light={<img src={activeVideo?.thumb?.src} alt='Thumbnail' style={{ width: '2000px ' }} />}
+              pip={true}
+            />}
+        </div>
 
-          />}
 
-      </div>
-
-
-      <div className="border flex justify-center items-center">
-        <VideoList setActiveData={setActiveData} />
+        <div className="flex flex-col border max-w-[600px] w-full">
+          <p className="text-[25px]  font-semibold px-[10px] py-[25px] bg-darkBlue w-full mb-[10px]">Playlist</p>
+          <VideoList setActiveData={setActiveData} />
+        </div>
       </div>
     </div>
   );
