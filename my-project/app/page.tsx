@@ -36,7 +36,6 @@ export default function Home() {
 
         {/* // * ReactPlayer */}
         <div className="  px-[100px] max-w-[2000px] w-full">
-
           {isClient &&
             <DynamicReactPlayer
               url={activeVideo?.sources[0]}
